@@ -21,26 +21,20 @@ define(["config"], function(Config) {
             return input;
         };
 
+
         /**
          * returns an vector with the requested movement and rotation information
          */
-        this.getFormattedDisplacementInformation = function(){
-
-
-            var raw_input = this._getUserInput();
-
+        this.getUserInputRelativeToPlayer = function(){
 
             input = {};
-            input.movement = {
-                x: 0, 
-                y: 0, 
-                z: 0
-            };
-
+            input.movement = new THREE.Vector3(0,0,0);
             input.rotation = {
                 horizontal: 0,
                 vertical: 0
             }
+
+            var raw_input = this._getUserInput();
 
             raw_input.forEach(function(element, index){
                 if (element == "up"){ input.movement.y += Config.movementSpeed }
@@ -52,8 +46,8 @@ define(["config"], function(Config) {
 
                 else if (element == "rotate_up"){ input.rotation.vertical += Config.rotationSpeed }
                 else if (element == "rotate_down"){ input.rotation.vertical -= Config.rotationSpeed }
-                else if (element == "rotate_right"){ input.rotation.horizontal += Config.rotationSpeed }
-                else if (element == "rotate_left"){ input.rotation.horizontal -= Config.rotationSpeed }
+                else if (element == "rotate_right"){ input.rotation.horizontal -= Config.rotationSpeed }
+                else if (element == "rotate_left"){ input.rotation.horizontal += Config.rotationSpeed }
 
             });
 

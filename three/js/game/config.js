@@ -6,7 +6,7 @@ define(function(){
         
         movementSpeed: 2,
 
-        rotationSpeed: 2,
+        rotationSpeed: 0.1,
 
 
         /**
@@ -14,18 +14,19 @@ define(function(){
          * @type {Object}
          */
         keyMap: {
-            a: "left",
+            q: "left",
             w: "forward",
             s: "back",
-            d: "right",
+            e: "right",
             c: "down",
             " ": "up",
 
-            e: "rotate_right",
-            q: "rotate_left",
+            d: "rotate_right",
+            a: "rotate_left",
             v: "rotate_up",
             b: "rotate_down"
         }
+        
 
 
     }

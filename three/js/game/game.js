@@ -27,7 +27,7 @@ require(["world", "player", "./../libs/three"], function(World, Player){
 
             player.updatePlayer();
 
-            renderer.render(scene, player.camera); 
+            renderer.render(scene, player.playerCamera.camera); 
         }
         gameLoop();
           
