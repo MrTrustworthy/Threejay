@@ -28,7 +28,7 @@
                        
             player.updatePlayer();
             scene.simulate();
-            renderer.render(scene, player.playerCamera.camera); 
+            renderer.render(scene, player.camera); 
             requestAnimationFrame(gameLoop);  
             
             
