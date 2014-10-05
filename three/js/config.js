@@ -1,6 +1,6 @@
-define(function(){
 
-    var config = {
+
+    var Config = {
 
         
         
@@ -30,10 +30,3 @@ define(function(){
 
 
     }
-    return config
-
-
-
-
-
-});

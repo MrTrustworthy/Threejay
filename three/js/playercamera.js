@@ -1,7 +1,6 @@
-define(["util"], function(Utility){
 
 
-	var playerCamera = function(){
+	var PlayerCamera = function(){
 
 
 		this.camera = null;
@@ -32,6 +31,9 @@ define(["util"], function(Utility){
 			var _self = this;
 			if(vector.x != 0 || vector.y != 0 || vector.z != 0 ){                
                 Utility.objForEach(vector, function(axis, value) {
+
+
+
                     _self.camera.position[axis] += value;
                 });
             }
@@ -49,6 +51,7 @@ define(["util"], function(Utility){
 		this.rotateCamera = function(rotation){
 
 			if(rotation.vertical != 0 || rotation.horizontal != 0){
+				console.log("rotating!");
                 
                 // console.log("rotating camera", this.camera.position);
 
@@ -84,20 +87,3 @@ define(["util"], function(Utility){
 
 
 	};
-	return playerCamera;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-});

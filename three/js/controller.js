@@ -1,6 +1,6 @@
-define(["config"], function(Config) {
+
     
-    var controller = function(){
+    var GameController = function(){
 
 
         this.pressedKeys = [];
@@ -95,5 +95,3 @@ define(["config"], function(Config) {
         };
 
     }
-    return controller;
-});

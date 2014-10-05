@@ -1,13 +1,11 @@
-define(["controller", "util", "playermodel", "playercamera"], 
-    function(Controller, Utility, PlayerModel, PlayerCamera) {
 
-
-    var player = function(){
+    var Player = function(){
 
 
         this.controller = null;
         this.playerModel = null;
         this.playerCamera = null;
+        this.scene = null;
 
         /**
          * loads the player into the given scene
@@ -24,8 +22,10 @@ define(["controller", "util", "playermodel", "playercamera"],
             this.playerCamera.loadCamera(this.playerModel.model);
 
 
-            this.controller = new Controller();
+            this.controller = new GameController();
             this.controller.loadConnections();
+
+            this.scene = scene;
         };
 
 
@@ -39,16 +39,19 @@ define(["controller", "util", "playermodel", "playercamera"],
 
 
             //format movement input to work according to the current rotation.
-            var currentAlpha = this.playerModel.model.rotation.y;
+            var currentRotation = this.playerModel.model.rotation.y;
 
-            //console.log(this.playerModel.model.rotation);
-            input.movement = input.movement.applyMatrix3(Utility.getYRotationMatrix(currentAlpha));
+            // translate the given movement coordinates to the coordinates calculated based
+            // on the current player rotation
+            input.movement = input.movement.applyMatrix3(Utility.getYRotationMatrix(currentRotation));
 
 
             //movement
             this.playerModel.moveModel(input.movement);
 
             this.playerCamera.moveCamera(input.movement);
+
+
 
             //rotation
             this.playerModel.rotateModel(input.rotation);
@@ -59,6 +62,5 @@ define(["controller", "util", "playermodel", "playercamera"],
 
 
     }
-    return player;
 
-});
+
