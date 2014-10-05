@@ -50,8 +50,8 @@
                     map: THREE.ImageUtils.loadTexture("media/textures/white.jpg"),
                     side: THREE.DoubleSide
                 })
-            var boxGeometry = new THREE.CylinderGeometry(20,20,10,8);
-            this.model = new Physijs.CapsuleMesh(boxGeometry, material, 2000);
+            var boxGeometry = new THREE.BoxGeometry(10,15,20);
+            this.model = new Physijs.BoxMesh(boxGeometry, material, 2000);
             this.model.position.y += (this.model.geometry.parameters.height / 2)+ 10;
             this.model.castShadow = true;
 
@@ -132,9 +132,9 @@
             
             if(rotation.horizontal != 0){               
                 var alpha = rotation.horizontal;
-                //this.model.rotateY(alpha);
+                this.model.rotateY(alpha);
                 console.log("rotation:", this.model.rotation.y);
-                this.model.rotation.y += alpha;
+                //this.model.rotation.y += alpha;
                 this.model.__dirtyRotation = true;
                
             }
