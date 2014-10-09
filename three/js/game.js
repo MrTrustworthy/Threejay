@@ -1,39 +1,45 @@
         
 
 
-        console.log("loading game");
-
-        Physijs.scripts.worker = "js/physijs_worker.js";
-        Physijs.scripts.ammo = "ammo.js";
 
 
-        var scene = new Physijs.Scene();
-        console.log("loaded scene", scene);
+
+
+        loadGame = function(){
+            console.log("loading game");
+
+            scene = new THREE.Scene();
+            console.log("loaded scene", scene);
+            
+            renderer = new THREE.WebGLRenderer({antialias: true});
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+
+            world = new GameWorld();
+            world.loadWorld(scene);
+
+            player = new Player();
+            player.loadPlayer(scene);
+
+
+            gamePhysics = new GamePhysics();
+
+            document.body.appendChild(renderer.domElement);
+
+        };
         
-        var renderer = new THREE.WebGLRenderer({antialias: true});
-        renderer.setSize(window.innerWidth, window.innerHeight);
 
 
 
-        var world = new GameWorld();
-        world.loadWorld(scene);
-
-        var player = new Player();
-        player.loadPlayer(scene);
 
 
-
-        function gameLoop() { 
+        startGame = function() { 
 
                        
             player.updatePlayer();
-            scene.simulate();
+            gamePhysics.processPhysics(scene);
             renderer.render(scene, player.camera); 
-            requestAnimationFrame(gameLoop);  
+            requestAnimationFrame(startGame);  
             
             
-        }
-        gameLoop();
-          
-        document.body.appendChild(renderer.domElement);
-  
+        };

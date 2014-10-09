@@ -7,36 +7,58 @@
         
         this.loadWorld = function(scene){
 
-            for(var i = 0; i < 20; i++){
-                var geometry = new THREE.BoxGeometry(Utility.randomInt(40)+2, Utility.randomInt(40)+2, Utility.randomInt(25)+2)
+            for(var i = 0; i < 50; i++){
+
+                var geometry = new THREE.BoxGeometry(
+                    Utility.randomInt(40)+2, 
+                    Utility.randomInt(40)+2, 
+                    Utility.randomInt(25)+2
+                    );
+
                 var material = new THREE.MeshBasicMaterial({
                         map: THREE.ImageUtils.loadTexture("media/textures/simple.jpeg"),
                         side: THREE.DoubleSide
-                    })
-                var gameobject = new Physijs.BoxMesh(
-                    geometry, 
-                    material, 
-                    200
+                    });
+
+                var gameobject = new THREE.Mesh(
+                        geometry, 
+                        material
                     );
-                //gameobject.overdraw = true;
-                gameobject.position.x = Utility.randomInt(150, true);               
-                gameobject.position.z = Utility.randomInt(150, true);                
-                gameobject.position.y += (gameobject.geometry.parameters.height/2) + Utility.randomInt(50, true);
+                gameobject.position.x = Utility.randomInt(250, true);               
+                gameobject.position.z = Utility.randomInt(250, true);                
+                gameobject.position.y += (gameobject.geometry.parameters.height / 2) + Utility.randomInt(50);
+                
+                
+                //this is for the physics and stuff. 
+                gameobject.hasGravity = true;
+                gameobject.relativeZeroHeight = gameobject.geometry.parameters.height / 2;
+                gameobject.mass =  
+                    (gameobject.geometry.parameters.width +
+                    gameobject.geometry.parameters.height +
+                    gameobject.geometry.parameters.depth) / 10;
+
+                gameobject.isGameobject = true;
+                gameobject.isHittable = true;
+                gameobject.health = gameobject.geometry.parameters.width +
+                    gameobject.geometry.parameters.height +
+                    gameobject.geometry.parameters.depth;
+
+
 
                 scene.add( gameobject );
 
 
             }
 
-            var geometry = new THREE.BoxGeometry(1000, 1, 1000);
+            // create the floor
+            var geometry = new THREE.BoxGeometry(1000, 0.1, 1000);
             var material = new THREE.MeshBasicMaterial({
                     map: THREE.ImageUtils.loadTexture("media/textures/floor3.jpg"),
-                })
+                });
 
-            var plane = new Physijs.BoxMesh(
-                geometry, 
-                material, 
-                0
+            var plane = new THREE.Mesh(
+                    geometry, 
+                    material
                 );
             plane.receiveShadow = true;
             scene.add(plane);

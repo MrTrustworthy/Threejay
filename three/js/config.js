@@ -8,23 +8,26 @@
 
         rotationSpeed: 0.1,
 
+        gravity: 0.2,
+
+        mouseSpeed: 1,
+
 
         /**
          * maps the keys to the appropriate actions like left right down 
          * @type {Object}
          */
         keyMap: {
-            q: "left",
+            a: "left",
             w: "forward",
             s: "back",
-            e: "right",
+            d: "right",
             c: "down",
             " ": "up",
-
-            d: "rotate_right",
-            a: "rotate_left",
-            v: "rotate_up",
-            b: "rotate_down"
+            e: "attack_1",
+            q: "attack_2",
+            r: "attack_3",
+            t: "attack_4"
         }
         
 
