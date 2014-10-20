@@ -1,6 +1,6 @@
 
     
-    var GameController = function(){
+    var GameController = function(controllerConfig){
 
 
         this.pressedKeys = [];
@@ -11,31 +11,26 @@
 
         this.horizontalRotation = 0;
 
+        this.controllerConfig = controllerConfig;
 
 
-
-
-
-                /** 
-         * Internal function that transforms the pressed keys into
-         * an array of commands (up, down, turnright)
-         */
-        this._getUserInput = function(){
-            var _self = this;
-            var input = [];
-            this.pressedKeys.forEach(function(element, index){
-                if(element){
-                    input.push(Config.keyMap[element]);
-                }
-            });
-            return input;
-        };
 
 
         /**
          * returns an vector with the requested movement and rotation information
          */
         this.getUserInputRelativeToPlayer = function(){
+
+            var _self = this;
+
+            var raw_input = [];
+            this.pressedKeys.forEach(function(element, index){
+                if(element){
+                    raw_input.push(_self.controllerConfig.keyMap[element]);
+                }
+            });
+
+
 
             //stuff we need as container
             input = {};
@@ -46,25 +41,27 @@
             };
             input.playeractions = [];
 
-            var raw_input = this._getUserInput();
-
             //hand over keyboard input
             raw_input.forEach(function(element, index){
-                if (element == "up"){ input.movement.y += Config.movementSpeed }
-                else if (element == "down"){ input.movement.y -= Config.movementSpeed }
-                else if (element == "right"){ input.movement.x -= Config.movementSpeed }
-                else if (element == "left"){ input.movement.x += Config.movementSpeed }
-                else if (element == "forward"){ input.movement.z += Config.movementSpeed }
-                else if (element == "back"){ input.movement.z -= Config.movementSpeed }
+                if(!element){return}
+
+                
+                if (element == "up"){ input.movement.y += 1 }
+                else if (element == "down"){ input.movement.y -= 1 }
+                else if (element == "right"){ input.movement.x -= 1 }
+                else if (element == "left"){ input.movement.x += 1 }
+                else if (element == "forward"){ input.movement.z += 1 }
+                else if (element == "back"){ input.movement.z -= 1 }
+                    
+                else if (element == "jump"){ input.playeractions.push(element)}
                     
                 else if (element.indexOf("attack") > -1){ input.playeractions.push(element)}
-
-                // else if (element == "attack_1"){ input.playeractions.push("attack_1") }
-                // else if (element == "attack_2"){ input.playeractions.push("attack_2") }
             });
 
             //hand over mouse input
-            input.rotation.horizontal -= (this.horizontalRotation/200) * Config.mouseSpeed;
+            input.rotation.horizontal -= 
+                (this.horizontalRotation/200) * 
+                controllerConfig.mouseSpeed.selected;
             this.horizontalRotation = 0;
 
             return input;
@@ -87,10 +84,10 @@
             document.onkeydown = function(evt){               
                 var alreadyThere = false;
                 _self.pressedKeys.forEach(function(element, index){
-                    if(element == evt.key){ alreadyThere = true; }                   
+                    if(element == evt.keyCode){ alreadyThere = true; }                   
                 });
                 if(!alreadyThere){
-                    _self.pressedKeys.push(evt.key);
+                    _self.pressedKeys.push(evt.keyCode);
                 }
             };
 
@@ -99,7 +96,7 @@
              */ 
             document.onkeyup = function(evt){
                 _self.pressedKeys.forEach(function(element, index){
-                    if(element == evt.key){
+                    if(element == evt.keyCode){
                         _self.pressedKeys.splice(index, 1);
                     }
                 });

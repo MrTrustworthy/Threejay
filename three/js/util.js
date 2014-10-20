@@ -53,6 +53,34 @@
         roundToDecimals: function(number, amountOfDecimals){
 
             return Math.round(number * 1000)/1000;
+        },
+
+
+        /**
+         * Returns a random (one of 4) material object for the Gameobjects
+         */
+        getRandomSubstance: function(){
+            var x = Math.floor(Math.random()*4) + 1;
+
+            var matName;
+
+            switch(x){
+                case 1: matName = "SoftWood"; break;
+                case 2: matName = "Box"; break;
+                case 3: matName = "Stone"; break;
+                case 4: matName = "Metal"; break;
+            }
+
+
+
+            var material = {
+                name: matName,
+                strength: (x*x)
+            }
+
+            return material;
+
+
         }
 
 

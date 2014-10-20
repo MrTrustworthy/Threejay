@@ -5,7 +5,8 @@
 
 
 
-        loadGame = function(){
+        loadGame = function(configObject){
+
             console.log("loading game");
 
             scene = new THREE.Scene();
@@ -16,13 +17,14 @@
 
 
             world = new GameWorld();
-            world.loadWorld(scene);
+            world.loadWorld(scene, configObject.worldDetails);
+
 
             player = new Player();
-            player.loadPlayer(scene);
+            player.loadPlayer(scene, configObject.playerDetails);
 
 
-            gamePhysics = new GamePhysics();
+            gamePhysics = new GamePhysics(configObject.physicsDetails);
 
             document.body.appendChild(renderer.domElement);
 

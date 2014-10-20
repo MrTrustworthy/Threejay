@@ -20,15 +20,16 @@
 	<script src="js/stats.js"></script>
     <script src="js/three.js"></script>
 	<script src="js/util.js"></script>
-	<script src="js/config.js"></script>
 	<script src="js/gameworld.js"></script>
 	<script src="js/controller.js"></script>
 	<script src="js/player.js"></script>
 	<script src="js/phys.js"></script>
 	<script src="js/attacks.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/demoSetupConf.js"></script>
 
     <script>
+
 
 
 	   	
@@ -37,29 +38,44 @@
 	   		document.getElementById("main_div").hidden = "true";
 
 
+	   		// Set up the stats
 	   		stats = new Stats();
-			stats.setMode(0); // 0: fps, 1: ms
-
-			// Align top-left
+			stats.setMode(0); 
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.left = '0px';
 			stats.domElement.style.top = '0px';
-
 			document.body.appendChild( stats.domElement );
-			loadGame();
-			startGame();
+
 			setInterval( function () {
-
 			    stats.begin();
-
-
 			    stats.end();
-
 			}, 1000 / 60 );
-	   					    
-	   			
+
+
+			loadGame(demo_config_test);
+
+			startGame();
 
 	   	};
+
+
+
+	   	var loadupDom = function(){
+	   		var mainDiv = document.getElementById("main_div");
+	   		var iterateStuff = function(parent, element){
+	   			if(typeof element == "string" || typeof element == "number"){
+	   				console.log(parent, element);
+	   			} else if(typeof element == "object"){
+	   				Object.keys(element).forEach(function(key){
+	   					iterateStuff(parent + "/" + key, element[key]);
+	   				});
+	   			}
+	   		}
+	   		iterateStuff("", demo_config_test);
+	   	};
+
+	   	loadupDom();
+
 
 
     </script>
