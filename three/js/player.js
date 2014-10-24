@@ -237,93 +237,82 @@ var Player = function() {
      */
     this._moveModel = function(inputVector) {
 
+        var _self = this;
 
-        //modify the vector appropriately
-        var newMovementVector = inputVector.applyMatrix3(
-            Utility.getYRotationMatrix(this.model.rotation.y)).
-        normalize().
-        multiplyScalar(this.playerDetails.movement.speed.selected);
+        //some needed variables
+        var playerPosition = this.model.position.clone();
+        var playerSize = this.playerDetails.model.size.selected;
+        var yRotationAxisVector = Utility.yRotationAxisVector; //new THREE.Vector3(0, 1, 0);
+        var yBaseRotationAngle = 90 * (Math.PI / 180);
 
 
-        // factor in the current movement
+        //calculate the movement-vector based on the input
+        var newMovementVector = inputVector.clone()
+            .applyAxisAngle(yRotationAxisVector, this.model.rotation.y)
+            .normalize()
+            .multiplyScalar(this.playerDetails.movement.speed.selected);
+
+
+        // factor in the current movement based on the acceleration-variable
+        // TODO: this currently also changes jumping. either outsource jumping to gravity
+        // or get some other way to fix this
         newMovementVector.multiplyScalar(this.playerDetails.movement.acceleration.selected);
         this.currentMovement.multiplyScalar(1 - this.playerDetails.movement.acceleration.selected);
         newMovementVector.add(this.currentMovement);
 
-        // // RAYCASTING TO CHECK FOR OBJECTS ALONG THE LINE OF MOVEMENT             
+
+        // initialize variables used for raycasting     
         var rayDirectionVector = newMovementVector.clone().normalize();
 
-        var playerSize = this.playerDetails.model.size.selected;
+
+
 
         //actual raycaster
         var raycaster = new THREE.Raycaster(
             this.model.position,
             rayDirectionVector,
             0,
-            this.playerDetails.model.size.selected
+            this.playerDetails.model.size.selected + newMovementVector.length()
         );
 
-        // var objectsIntersected = [];
-        // raycaster.intersectObjects(scene.children).forEach(function(element, index) {
-        //     if (element.object.isGameobject && !element.object.isPlayer && !element.object.isDead) {
-
-        //         objectsIntersected.push(element);
-        //     }
-        // });
-
-
-        //TODO: find way to dynamically load rays
-        var raycastOrigins = [this.model.position];
-
-        for (var i = 0; i <= 4; i++) {
-            raycastOrigins.push(this.model.position.clone());
-        }
-
-        //TODO: recalculate that. those are not the coordinates we want (not rotated)
-        raycastOrigins[1].x += playerSize;
-        raycastOrigins[2].x -= playerSize;
-        raycastOrigins[3].y += playerSize;
-        raycastOrigins[4].y -= playerSize;
-
-        //the container for all intersected objects. should only contain a single element once
-        var objectsIntersected = [];
-
+        //TODO: make this dynamical, looks like shit right now
+        var rayDirectionVectorList = [];
+        rayDirectionVectorList.push(rayDirectionVector.clone());
+        rayDirectionVectorList.push(rayDirectionVector.clone().applyAxisAngle(yRotationAxisVector, yBaseRotationAngle).far = this.playerDetails.model.size.selected);
+        rayDirectionVectorList.push(rayDirectionVector.clone().applyAxisAngle(yRotationAxisVector, yBaseRotationAngle * -1).far = this.playerDetails.model.size.selected);
+        rayDirectionVectorList.push(rayDirectionVector.clone().applyAxisAngle(yRotationAxisVector, yBaseRotationAngle / 2));
+        rayDirectionVectorList.push(rayDirectionVector.clone().applyAxisAngle(yRotationAxisVector, (yBaseRotationAngle / 2) * -1));
 
         //fetching collisions
-
         //seperate raycast for each raycastOrigin
-        raycastOrigins.forEach(function(origin, index) {
+        rayDirectionVectorList.forEach(function(rayDirectionVector, i) {
 
-            raycaster.set(origin, rayDirectionVector);
+
+            //modify the raycaster
+            raycaster.set(
+                playerPosition,
+                rayDirectionVector
+            );
 
             //all intersected objects
-            raycaster.intersectObjects(scene.children).forEach(function(element, index) {
+            raycaster.intersectObjects(scene.children).forEach(function(hitElement, index) {
 
-                if (element.object.isGameobject && !element.object.isPlayer && !element.object.isDead) {
-                    //make sure we only have the same element in the array ONCE
+                if (hitElement.object.isGameobject && !hitElement.object.isPlayer && !hitElement.object.isDead) {
 
-                    //TODO: write a better scan-array-for-object
-                    var objectAlreadyThere = false;
-                    objectsIntersected.forEach(function(intersectedElement, index) {
-                        if (element.object.id === intersectedElement.object.id) {
-                            objectAlreadyThere = true;
-                        }
-                    });
-                    if (!objectAlreadyThere) {
-                        objectsIntersected.push(element);
-                    }
+                    // for each ray that intersected, modify the movementVector appropriately
+                    var distanceLeftToCollision = Math.abs(
+                        hitElement.distance - _self.playerDetails.model.size.selected
+                    );
 
+                    rayDirectionVector.negate().normalize().multiplyScalar(distanceLeftToCollision);
+
+                    newMovementVector.add(rayDirectionVector);
                 }
 
             });
+
         });
 
-
-        if (objectsIntersected.length > 0) {
-            console.log("INTERSECTED:", objectsIntersected);
-            newMovementVector = new THREE.Vector3(0, 0, 0);
-            //newMovementVector.negate().multiplyScalar(0.3);
-        }
 
         //perform the movement
         var _self = this;
@@ -371,15 +360,9 @@ var Player = function() {
                 this.model.position
             );
 
+            cameraPositionRelativeToZero.applyAxisAngle(Utility.yRotationAxisVector, rotation.horizontal);
 
-            var alpha = rotation.horizontal;
-
-            var rotationMatrix = Utility.getYRotationMatrix(alpha);
-
-
-            var cameraPositionChange = cameraPositionRelativeToZero.applyMatrix3(rotationMatrix);
-
-            this.camera.position.addVectors(cameraPositionChange, this.model.position);
+            this.camera.position.addVectors(cameraPositionRelativeToZero, this.model.position);
 
             // change camera diff so it stays consistent
             this.cameraDiff = new THREE.Vector3(0, 0, 0).subVectors(
@@ -400,9 +383,11 @@ var Player = function() {
         var _self = this;
 
 
-
         actions.forEach(function(action) {
+
+
             if (action === "jump") {
+
                 if (!_self.isJumping) {
                     _self.isJumping = true;
                     _self.currentMovement.add(new THREE.Vector3(
@@ -410,13 +395,17 @@ var Player = function() {
                         _self.playerDetails.movement.jumping_power.selected,
                         0));
                 }
-                return;
+
+
+            } else {
+
+                var id = parseInt(action.slice(-1));
+                _self.attacks[id - 1].executeAttack(_self.model, _self.scene);
+
+
             }
 
 
-
-            var id = parseInt(action.slice(-1));
-            _self.attacks[id - 1].executeAttack(_self.model, _self.scene);
         });
     };
 

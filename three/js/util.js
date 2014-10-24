@@ -3,6 +3,12 @@
     var Utility = {
 
         /**
+         * Standart Vector for Y-Rotation-Axis
+         */
+
+        yRotationAxisVector: new THREE.Vector3(0, 1, 0),
+
+        /**
          * provides a function to loop through objects
          */
         objForEach: function(obj, callback){
